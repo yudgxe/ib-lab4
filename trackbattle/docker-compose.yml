@@ -1,0 +1,57 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:13.2-alpine
+    restart: always
+    env_file:
+      - variables.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./trackbattle-postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  front:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./docker/front_builder/Dockerfile
+    tty: true
+    ports:
+      - "6001:8080"
+    networks:
+      - app-network
+
+  trackbattle:
+    build:
+      context: .
+      dockerfile: ./docker/trackbattle/Dockerfile
+    restart: always
+    env_file:
+      - variables.env
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+#   selenium:
+#     image: selenium/standalone-chrome
+#     environment:
+#       - JAVA_OPTS=-Dwebdriver.chrome.whitelistedIps=
+#     restart: always
+#     privileged: true
+#     shm_size: 48g
+#     ports:
+#       - "4444:4444"
+#     extra_hosts:
+#       - "host.docker.internal:host-gateway"
+
+volumes:
+  trackbattle-postgres-data:
+
+networks:
+  app-network:
+    driver: bridge
+
