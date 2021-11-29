@@ -21,9 +21,8 @@ export class Notes {
 
     @JsonProperty("waveform", String, false)
     waveform: Waveform = "triangle";
-
-    @JsonProperty("play", FunctionConverter, true)
-    play = async (player: AudioPlayer) => {
+    
+    async play (player: AudioPlayer) {
         player.stopPlaying();
         await player.playString(this.notes, this.waveform)
     }

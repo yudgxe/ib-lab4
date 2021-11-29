@@ -16,6 +16,7 @@ try:
     from selenium.common import exceptions # type: ignore
     from selenium.webdriver.support import expected_conditions # type: ignore
     from selenium.webdriver.support.ui import WebDriverWait # type: ignore
+    from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 except ImportError:
     print("Selenium not imported. If you run with --selenium, you need to install it with `pip3 install selenium` or `zypper install python3-selenium`")
 
@@ -124,9 +125,10 @@ def attack(hostname: str, port: int, use_selenium: bool = False) -> List[str]:
                     raise AttackError("I believe you")
         else:
             try:
-                url = "http://host.docker.internal:6001/#/track?" + vector
+                url = "http://localhost:6001/#/track?" + vector
                 print(f"getting {url}\nIf this takes too long, stop with ctrl-c")
-                driver = webdriver.Remote("http://localhost:4444/wd/hub")
+                driver = webdriver.Remote(command_executor="http://localhost:4444/wd/hub",
+                desired_capabilities=DesiredCapabilities.FIREFOX)
                 driver.get(url)
                 driver.find_element_by_xpath("//button[text()='play']").click()
                 try:
